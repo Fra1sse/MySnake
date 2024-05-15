@@ -19,6 +19,7 @@ project ("OpenGL")
 
 find_package(OpenGL REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 
 # Добавьте источник в исполняемый файл этого проекта.
 add_executable (OpenGL)
@@ -30,11 +31,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src
 )
 
-target_sources(${PROJECT_NAME} PRIVATE ${SOURCES} "include/snake.h" "src/snake.cpp" "src/main.cpp" )
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCES} "include/snake.h" "src/snake.cpp" "src/main.cpp"  "src/menu.cpp")
 
 # this is heuristically generated, and may not be correct
 target_link_libraries(OpenGL PRIVATE OpenGL::GL)  
 target_link_libraries(OpenGL PRIVATE glfw)
+target_link_libraries(OpenGL PRIVATE imgui::imgui)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET OpenGL PROPERTY CXX_STANDARD 20)

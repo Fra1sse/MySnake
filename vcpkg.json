@@ -3,6 +3,10 @@
     "glfw3",
     "opengl",
     "glm",
-    "glad"
+    "glad",
+    {
+      "name": "imgui",
+      "features": ["win32-binding", "glfw-binding", "opengl3-binding"]
+    }
   ]
 }
