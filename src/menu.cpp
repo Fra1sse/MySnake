@@ -1,3 +1,4 @@
+#include "Menu.h"
 #include "snake.h"
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -6,8 +7,8 @@
 
 void Menu::SetupMenu() {
 
-	WidthMenu = 1200;
-	HeightMenu = 600;
+	_menuSize.width = 1200;
+	_menuSize.height = 600;
     clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	Setup = false;
@@ -18,15 +19,16 @@ void Menu::SetupMenu() {
 void Menu::SetupGame() {
 
 
-    WidthWindow = 600;
-    HeightWindow = 600;
+    _windowSize.width = 600;
+    _windowSize.height = 600;
 
     Border_color = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
     Field_color = ImVec4(0.8f, 0.8f, 0.8f, 1.00f);
     Fruit_color = ImVec4(1.0f, 0.0f, 0.0f, 1.00f);
     Snake_color = ImVec4(0.0f, 1.0f, 0.0f, 1.00f);
-    WidthGame = 11;
-    HeightGame = 11;
+
+    _gameSize.width = 11;
+    _gameSize.height = 11;
 }
 
 
@@ -36,7 +38,7 @@ int Menu::BeginMenu() {
 
     SetupMenu();
     SetupGame();
-    std::cout << WidthWindow << std::endl;
+    //std::cout << WidthWindow << std::endl;
 
         if (!glfwInit())
             return 1;
@@ -65,7 +67,7 @@ int Menu::BeginMenu() {
 #endif
 
     // Create window with graphics context
-        GLFWwindow* window = glfwCreateWindow(WidthMenu, HeightMenu, "Snake", nullptr, nullptr);
+        GLFWwindow* window = glfwCreateWindow(_menuSize.width, _menuSize.height, "Snake", nullptr, nullptr);
         if (window == nullptr)
             return 1;
         glfwMakeContextCurrent(window);
@@ -148,8 +150,11 @@ int Menu::BeginMenu() {
 
                 ImGui::Begin("Setup Game", &Setup);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
                 //ImGui::Text("Hello from another window!");
-                ImGui::SliderInt("width", &WidthGame, 2, 21);            // Edit 1 float using a slider from 0.0f to 1.0f
-                ImGui::SliderInt("height", &HeightGame, 2, 21);            // Edit 1 float using a slider from 0.0f to 1.0f
+                int temp_width = 11, temp_height = 11;
+                ImGui::SliderInt("width", &temp_width, 2, 21);            // Edit 1 float using a slider from 0.0f to 1.0f
+                ImGui::SliderInt("height", &temp_height, 2, 21);            // Edit 1 float using a slider from 0.0f to 1.0f
+                _gameSize.width = (uint8_t)temp_width;
+                _gameSize.height = (uint8_t)temp_height;
                 ImGui::ColorEdit3("Border color", (float*)&Border_color); // Edit 3 floats representing a color
                 ImGui::ColorEdit3("Field color", (float*)&Field_color); // Edit 3 floats representing a color
                 ImGui::ColorEdit3("Snake color", (float*)&Snake_color); // Edit 3 floats representing a color
@@ -183,10 +188,6 @@ int Menu::BeginMenu() {
         glfwDestroyWindow(window);
         glfwTerminate();
         
-        if (BeginGame) {
-            Snake game;
-            game.GameBegin();
-        }
 
         return 0;
 

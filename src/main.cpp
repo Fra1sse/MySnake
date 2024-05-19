@@ -1,6 +1,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+//#include "Menu.h"
 #include "snake.h"
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -17,15 +18,11 @@
 
 
 
-void main() {
+int main() {
 
-    Menu menu;
-    menu.BeginMenu();
-
-    //Snake game;
-    //game.GameBegin();
+    Snake game;;
+    game.GameBegin();
     
-
     
-    return;
+    return 0;
 }

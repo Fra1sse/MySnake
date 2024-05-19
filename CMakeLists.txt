@@ -31,7 +31,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src
 )
 
-target_sources(${PROJECT_NAME} PRIVATE ${SOURCES} "include/snake.h" "src/snake.cpp" "src/main.cpp"  "src/menu.cpp")
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCES} "include/snake.h" "src/snake.cpp" "src/main.cpp"  "src/menu.cpp" "include/Menu.h")
 
 # this is heuristically generated, and may not be correct
 target_link_libraries(OpenGL PRIVATE OpenGL::GL)  

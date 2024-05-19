@@ -75,9 +75,9 @@ void Snake::ShowField(ImVec4 Field_color) { //фон
 	glBegin(GL_TRIANGLE_STRIP);
 	glColor4f((Field_color.x * Field_color.w), (Field_color.y * Field_color.w), (Field_color.z * Field_color.w), Field_color.w);
 		glVertex2f(0, 1);
-	glColor4f((Field_color.x * Field_color.w) - 1, (Field_color.y * Field_color.w) - 1, (Field_color.z * Field_color.w) - 1, Field_color.w);
+	glColor4f((Field_color.x * Field_color.w) - 0.1f, (Field_color.y * Field_color.w) - 0.1f, (Field_color.z * Field_color.w) - 0.1f, Field_color.w);
 		glVertex2f(1, 1); glVertex2f(0, 0);
-	glColor4f((Field_color.x * Field_color.w) - 2, (Field_color.y * Field_color.w) - 2, (Field_color.z * Field_color.w) - 2, Field_color.w);
+	glColor4f((Field_color.x * Field_color.w) - 0.2f, (Field_color.y * Field_color.w) - 0.2f, (Field_color.z * Field_color.w) - 0.2f, Field_color.w);
 		glVertex2f(1, 0);
 	glEnd();
 }
@@ -91,9 +91,9 @@ void Snake::ShowBorder(ImVec4 Border_color) { //граница
 	glBegin(GL_TRIANGLE_STRIP);
 	glColor4f((Border_color.x * Border_color.w), (Border_color.y * Border_color.w), (Border_color.z * Border_color.w), Border_color.w);
 		glVertex2f(0, 1);
-	glColor4f((Border_color.x * Border_color.w) + 1, (Border_color.y * Border_color.w) + 1, (Border_color.z * Border_color.w) + 1, Border_color.w);
+	glColor4f((Border_color.x * Border_color.w) + 0.1f, (Border_color.y * Border_color.w) + 0.1f, (Border_color.z * Border_color.w) + 0.1f, Border_color.w);
 		glVertex2f(1, 1); glVertex2f(0, 0);
-	glColor4f((Border_color.x * Border_color.w) + 2, (Border_color.y * Border_color.w) + 2, (Border_color.z * Border_color.w) + 2, Border_color.w);
+	glColor4f((Border_color.x * Border_color.w) + 0.2f, (Border_color.y * Border_color.w) + 0.2f, (Border_color.z * Border_color.w) + 0.2f, Border_color.w);
 		glVertex2f(1, 0);
 	glEnd();
 }
@@ -146,13 +146,13 @@ void Snake::Draw() {
 
 	glLoadIdentity();
 	glScaled(2.0 / (width + 2), 2.0 / (height + 2), 1);
-	glTranslatef(-((float)width + 2) * 0.5, -((float)height + 2) * 0.5, 0.0f);
+	glTranslatef(-((float)width + 2.0f) * 0.5f, -((float)height + 2.0f) * 0.5f, 0.0f);
 
 	//нижн€€ граница
 	for (int i = 0; i < width + 2; i++) {
 		glPushMatrix();
 		glTranslatef((float)i, 0.0f, 0.0f);
-		ShowBorder(setup.Border_color);
+		ShowBorder(_setup.getBorder_color());
 		glPopMatrix();
 	}
 
@@ -164,26 +164,26 @@ void Snake::Draw() {
 
 
 			if (i == 0 || i == width + 1)
-				ShowBorder(setup.Border_color);
+				ShowBorder(_setup.getBorder_color());
 			else if (j == y && i == x) {
-				ShowField(setup.Field_color);
-				ShowSnake_0(setup.Snake_color);
+				ShowField(_setup.getField_color());
+				ShowSnake_0(_setup.getSnake_color());
 			}
 			else if (j == fruitY && i == fruitX) {
-				ShowField(setup.Field_color);
-				ShowFruit(setup.Fruit_color);
+				ShowField(_setup.getField_color());
+				ShowFruit(_setup.getFruit_color());
 			}
 			else {
 				bool print = false;
 				for (int k = 0; k < ntail; k++) {
 					if (tailY[k] == j && tailX[k] == i) {
-						ShowField(setup.Field_color);
-						ShowSnake_o(setup.Snake_color);
+						ShowField(_setup.getField_color());
+						ShowSnake_o(_setup.getSnake_color());
 						print = true;
 					}
 				}
 				if (!print)
-					ShowField(setup.Field_color);
+					ShowField(_setup.getField_color());
 			}
 			glPopMatrix();
 		}
@@ -193,7 +193,7 @@ void Snake::Draw() {
 	for (int i = 0; i < width + 2; i++) {
 		glPushMatrix();
 		glTranslatef((float)i, (float)height + 1, 0.0f);
-		ShowBorder(setup.Border_color);
+		ShowBorder(_setup.getBorder_color());
 		glPopMatrix();
 	}
 
@@ -261,14 +261,14 @@ void Snake::End() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glLoadIdentity();
-	glScaled(2.0 / (width + 2), 2.0 / (height + 2), 1);
-	glTranslatef(-((float)width + 2) * 0.5, -((float)height + 2) * 0.5, 0);
+	glScaled(2.0 / (width + 2.0), 2.0 / (height + 2.0), 1.0);
+	glTranslatef(-((float)width + 2.0f) * 0.5f, -((float)height + 2.0f) * 0.5f, 0.0f);
 
 	//нижн€€ граница
 	for (int i = 0; i < width + 2; i++) {
 		glPushMatrix();
 		glTranslatef((float)i, 0.0f, 0.0f);
-		ShowBorder(setup.Border_color);
+		ShowBorder(_setup.getBorder_color());
 		glPopMatrix();
 	}
 
@@ -280,7 +280,7 @@ void Snake::End() {
 
 
 			if (i == 0 || i == width + 1)
-				ShowBorder(setup.Border_color);
+				ShowBorder(_setup.getBorder_color());
 			else {
 				bool flag = true;
 				for (int k = 0; k < 34; k++) { // 34 - кол-во точек
@@ -289,7 +289,7 @@ void Snake::End() {
 						flag = false;
 					}
 				}
-				if (flag) ShowField(setup.Field_color);
+				if (flag) ShowField(_setup.getField_color());
 			}
 			glPopMatrix();
 		}
@@ -299,7 +299,7 @@ void Snake::End() {
 	for (int i = 0; i < width + 2; i++) {
 		glPushMatrix();
 		glTranslatef((float)i, (float)height + 1.0f, 0.0f);
-		ShowBorder(setup.Border_color);
+		ShowBorder(_setup.getBorder_color());
 		glPopMatrix();
 	}
 
@@ -315,15 +315,23 @@ void Snake::GameBegin() {
 
 	GLFWwindow* window;
 
-	//SetupSnake();
+	SetupSnake();
+	_setup.BeginMenu();
 
-	std::cout << setup.WidthWindow << std::endl;
+	std::cout << _setup.getWindowSize().width << std::endl;
+	std::cout << _setup.getWindowSize().height << std::endl;
+	if (!_setup.getBeginGame()) {
+		return;
+	}
 
-	/* Create a windowed mode window and its OpenGL context */
-	/*window = glfwCreateWindow(setup.WidthWindow, setup.HeightWindow, "Snake", NULL, NULL);
-
+	//window = glfwCreateWindow(_setup.getWindowSize().width, _setup.getWindowSize().height, "Snake", NULL, NULL);
+	window = glfwCreateWindow(600, 600, "Snake", NULL, NULL);
+	
+	std::cout << _setup.getWindowSize().width << std::endl;
+	std::cout << _setup.getWindowSize().height << std::endl;
+	/*
 	glfwSetKeyCallback(window, key_callback);
-
+	
 	if (!window)
 	{
 		glfwTerminate();
@@ -336,9 +344,9 @@ void Snake::GameBegin() {
 		/* Poll for and process events *//*
 		glfwPollEvents();
 
-		if (game.game) {
-			game.Draw();
-			game.Logic();
+		if (game) {
+			Draw();
+			Logic();
 			Sleep(200);
 
 			/* Swap front and back buffers *//*
@@ -346,10 +354,11 @@ void Snake::GameBegin() {
 
 		}
 		else {
-			game.End();
+			End();
 			Sleep(200);
 			glfwSwapBuffers(window);
 		}
 	}*/
 
+	return;
 }
