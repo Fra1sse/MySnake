@@ -9,7 +9,7 @@ void Menu::SetupMenu() {
 
 	_menuSize.width = 1200;
 	_menuSize.height = 600;
-    clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    ClearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	Setup = false;
 	EndMenu = false;
@@ -18,27 +18,23 @@ void Menu::SetupMenu() {
 
 void Menu::SetupGame() {
 
-
     _windowSize.width = 600;
     _windowSize.height = 600;
 
-    Border_color = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
-    Field_color = ImVec4(0.8f, 0.8f, 0.8f, 1.00f);
-    Fruit_color = ImVec4(1.0f, 0.0f, 0.0f, 1.00f);
-    Snake_color = ImVec4(0.0f, 1.0f, 0.0f, 1.00f);
+    _gameSize.width = 2;
+    _gameSize.height = 2;
 
-    _gameSize.width = 11;
-    _gameSize.height = 11;
+    BorderColor = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
+    FieldColor = ImVec4(0.8f, 0.8f, 0.8f, 1.00f);
+    FruitColor = ImVec4(1.0f, 0.0f, 0.0f, 1.00f);
+    SnakeColor = ImVec4(0.0f, 1.0f, 0.0f, 1.00f);
 }
-
-
 
 
 int Menu::BeginMenu() {
 
     SetupMenu();
     SetupGame();
-    //std::cout << WidthWindow << std::endl;
 
         if (!glfwInit())
             return 1;
@@ -66,41 +62,27 @@ int Menu::BeginMenu() {
         //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
 
-    // Create window with graphics context
         GLFWwindow* window = glfwCreateWindow(_menuSize.width, _menuSize.height, "Snake", nullptr, nullptr);
         if (window == nullptr)
             return 1;
         glfwMakeContextCurrent(window);
-        glfwSwapInterval(1); // Enable vsync
+        glfwSwapInterval(1);
 
-        // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO(); (void)io;
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
-        // Setup Dear ImGui style
         ImGui::StyleColorsDark();
         //ImGui::StyleColorsLight();
 
-        // Setup Platform/Renderer backends
         ImGui_ImplGlfw_InitForOpenGL(window, true);
 #ifdef __EMSCRIPTEN__
         ImGui_ImplGlfw_InstallEmscriptenCanvasResizeCallback("#canvas");
 #endif
         ImGui_ImplOpenGL3_Init(glsl_version);
-
-        // Our state
-        bool show_demo_window = false;
-        Setup = false;
-        
-       
-
-        // Main loop
 #ifdef __EMSCRIPTEN__
-    // For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the imgui.ini file.
-    // You may manually call LoadIniSettingsFromMemory() to load settings from your own storage.
         io.IniFilename = nullptr;
         EMSCRIPTEN_MAINLOOP_BEGIN
 #else
@@ -108,79 +90,54 @@ int Menu::BeginMenu() {
 #endif
         {
             glfwPollEvents();
-
-            // Start the Dear ImGui frame
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-            if (show_demo_window)
-                ImGui::ShowDemoWindow(&show_demo_window);
-
-            // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
             {
-                static int counter = 0;
+                ImGui::Begin("Menu");
+                ImGui::Text("Snake");       
 
-                ImGui::Begin("Menu");                          // Create a window called "Hello, world!" and append into it.
-
-                ImGui::Text("Snake");               // Display some text (you can use a format strings too)
-
-                //кнопки:
-                //ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-                //ImGui::Checkbox("Another Window", &show_another_window);
-
-                if (ImGui::Button("Play"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                if (ImGui::Button("Play"))                       
                     BeginGame = true;
-                
-                if (ImGui::Button("Setup Game"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                if (ImGui::Button("Setup Game"))                         
                     Setup = true;
-
-                if (ImGui::Button("Clouse Menu"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                if (ImGui::Button("Clouse Menu"))                         
                     EndMenu = true;
-                //ImGui::SameLine();
-                //ImGui::Text("counter = %d", counter);
-
-                //ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
                 ImGui::End();
             }
 
             if (Setup)
             {
-
-                ImGui::Begin("Setup Game", &Setup);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-                //ImGui::Text("Hello from another window!");
-                int temp_width = 11, temp_height = 11;
-                ImGui::SliderInt("width", &temp_width, 2, 21);            // Edit 1 float using a slider from 0.0f to 1.0f
-                ImGui::SliderInt("height", &temp_height, 2, 21);            // Edit 1 float using a slider from 0.0f to 1.0f
+                ImGui::Begin("Setup Game", &Setup); 
+                int temp_width = _gameSize.width, temp_height = _gameSize.height;
+                ImGui::SliderInt("width_game", &temp_width, 2, 21);          
+                ImGui::SliderInt("height_game", &temp_height, 2, 21);   
                 _gameSize.width = (uint8_t)temp_width;
                 _gameSize.height = (uint8_t)temp_height;
-                ImGui::ColorEdit3("Border color", (float*)&Border_color); // Edit 3 floats representing a color
-                ImGui::ColorEdit3("Field color", (float*)&Field_color); // Edit 3 floats representing a color
-                ImGui::ColorEdit3("Snake color", (float*)&Snake_color); // Edit 3 floats representing a color
-                ImGui::ColorEdit3("Fruit color", (float*)&Fruit_color); // Edit 3 floats representing a color
+                ImGui::ColorEdit3("Border color", (float*)&BorderColor); 
+                ImGui::ColorEdit3("Field color", (float*)&FieldColor); 
+                ImGui::ColorEdit3("Snake color", (float*)&SnakeColor); 
+                ImGui::ColorEdit3("Fruit color", (float*)&FruitColor); 
 
                 if (ImGui::Button("Close"))
                     Setup = false;
                 ImGui::End();
             }
 
-            // Rendering
+            
             ImGui::Render();
             int display_w, display_h;
             glfwGetFramebufferSize(window, &display_w, &display_h);
             glViewport(0, 0, display_w, display_h);
-            glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+            glClearColor(ClearColor.x * ClearColor.w, ClearColor.y * ClearColor.w, ClearColor.z * ClearColor.w, ClearColor.w);
             glClear(GL_COLOR_BUFFER_BIT);
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
             glfwSwapBuffers(window);
         }
 #ifdef __EMSCRIPTEN__
         EMSCRIPTEN_MAINLOOP_END;
 #endif
-
-        // Cleanup
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
@@ -190,5 +147,4 @@ int Menu::BeginMenu() {
         
 
         return 0;
-
 }

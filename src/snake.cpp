@@ -1,4 +1,11 @@
 #include "snake.h"
+#include <GLFW/glfw3.h>
+#include <iostream>
+#include <conio.h>
+#include <windows.h>
+#include <gl/GL.h>
+#include <math.h>
+
 
 void Snake::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	if (action == GLFW_PRESS) {
@@ -110,12 +117,12 @@ void Snake::SetupSnake()
 {
 	game = true;
 	dir = stop; //направление
-	width = 21;
-	height = 21;
-	x = width / 2 + 1;
-	y = height / 2;
-	fruitX = rand() % width;
-	fruitY = rand() % height;
+	
+	x = _setup.getGameSize().width / 2 + 1;
+	y = _setup.getGameSize().height / 2;
+	
+	Fruit();
+
 	points = 0; //очки
 	ntail = 0;
 
@@ -125,8 +132,9 @@ void Snake::SetupSnake()
 
 void Snake::Fruit()
 {
-	fruitX = rand() % width;
-	fruitY = rand() % height;
+	srand(time(NULL));
+	fruitX = rand() % _setup.getGameSize().width + 1;
+	fruitY = rand() % _setup.getGameSize().height;
 
 	if (fruitX == x && fruitY == y) Fruit();
 	else for (int i = 0; i < ntail; i++) {
@@ -145,55 +153,55 @@ void Snake::Draw() {
 	//рисовка происходит снизу вверх
 
 	glLoadIdentity();
-	glScaled(2.0 / (width + 2), 2.0 / (height + 2), 1);
-	glTranslatef(-((float)width + 2.0f) * 0.5f, -((float)height + 2.0f) * 0.5f, 0.0f);
+	glScaled(2.0 / (_setup.getGameSize().width + 2), 2.0 / (_setup.getGameSize().height + 2), 1);
+	glTranslatef(-((float)_setup.getGameSize().width + 2.0f) * 0.5f, -((float)_setup.getGameSize().height + 2.0f) * 0.5f, 0.0f);
 
 	//нижн€€ граница
-	for (int i = 0; i < width + 2; i++) {
+	for (int i = 0; i < _setup.getGameSize().width + 2; i++) {
 		glPushMatrix();
 		glTranslatef((float)i, 0.0f, 0.0f);
-		ShowBorder(_setup.getBorder_color());
+		ShowBorder(_setup.getBorderColor());
 		glPopMatrix();
 	}
 
 	//поле
-	for (int j = 0; j < height; j++) {
-		for (int i = 0; i < width + 2; i++) {
+	for (int j = 0; j < _setup.getGameSize().height; j++) {
+		for (int i = 0; i < _setup.getGameSize().width + 2; i++) {
 			glPushMatrix();
 			glTranslatef((float)i, (float)j + 1, 0.0f);
 
 
-			if (i == 0 || i == width + 1)
-				ShowBorder(_setup.getBorder_color());
+			if (i == 0 || i == _setup.getGameSize().width + 1)
+				ShowBorder(_setup.getBorderColor());
 			else if (j == y && i == x) {
-				ShowField(_setup.getField_color());
-				ShowSnake_0(_setup.getSnake_color());
+				ShowField(_setup.getFieldColor());
+				ShowSnake_0(_setup.getSnakeColor());
 			}
 			else if (j == fruitY && i == fruitX) {
-				ShowField(_setup.getField_color());
-				ShowFruit(_setup.getFruit_color());
+				ShowField(_setup.getFieldColor());
+				ShowFruit(_setup.getFruitColor());
 			}
 			else {
 				bool print = false;
 				for (int k = 0; k < ntail; k++) {
 					if (tailY[k] == j && tailX[k] == i) {
-						ShowField(_setup.getField_color());
-						ShowSnake_o(_setup.getSnake_color());
+						ShowField(_setup.getFieldColor());
+						ShowSnake_o(_setup.getSnakeColor());
 						print = true;
 					}
 				}
 				if (!print)
-					ShowField(_setup.getField_color());
+					ShowField(_setup.getFieldColor());
 			}
 			glPopMatrix();
 		}
 	}
 
 	//верхн€€ граница
-	for (int i = 0; i < width + 2; i++) {
+	for (int i = 0; i < _setup.getGameSize().width + 2; i++) {
 		glPushMatrix();
-		glTranslatef((float)i, (float)height + 1, 0.0f);
-		ShowBorder(_setup.getBorder_color());
+		glTranslatef((float)i, (float)_setup.getGameSize().height + 1, 0.0f);
+		ShowBorder(_setup.getBorderColor());
 		glPopMatrix();
 	}
 
@@ -233,7 +241,7 @@ void Snake::Logic() {
 	}
 
 	//если попал в границу
-	if (x < 1 || x > width || y < 0 || y > height - 1) {
+	if (x < 1 || x > _setup.getGameSize().width || y < 0 || y > _setup.getGameSize().height - 1) {
 		game = false;
 	}
 
@@ -248,6 +256,7 @@ void Snake::Logic() {
 		points += 10;
 		ntail++;
 		Fruit();
+
 	}
 }
 
@@ -261,26 +270,26 @@ void Snake::End() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glLoadIdentity();
-	glScaled(2.0 / (width + 2.0), 2.0 / (height + 2.0), 1.0);
-	glTranslatef(-((float)width + 2.0f) * 0.5f, -((float)height + 2.0f) * 0.5f, 0.0f);
+	glScaled(2.0 / (21.0 + 2.0), 2.0 / (21. + 2.0), 1.0);
+	glTranslatef(-((float)21.0 + 2.0f) * 0.5f, -((float)21.0 + 2.0f) * 0.5f, 0.0f);
 
 	//нижн€€ граница
-	for (int i = 0; i < width + 2; i++) {
+	for (int i = 0; i < 21 + 2; i++) {
 		glPushMatrix();
 		glTranslatef((float)i, 0.0f, 0.0f);
-		ShowBorder(_setup.getBorder_color());
+		ShowBorder(_setup.getBorderColor());
 		glPopMatrix();
 	}
 
 	//поле
-	for (int j = 0; j < height; j++) {
-		for (int i = 0; i < width + 2; i++) {
+	for (int j = 0; j < 21; j++) {
+		for (int i = 0; i < 21 + 2; i++) {
 			glPushMatrix();
 			glTranslatef((float)i, (float)j + 1.0f, 0.0f);
 
 
-			if (i == 0 || i == width + 1)
-				ShowBorder(_setup.getBorder_color());
+			if (i == 0 || i == 21 + 1)
+				ShowBorder(_setup.getBorderColor());
 			else {
 				bool flag = true;
 				for (int k = 0; k < 34; k++) { // 34 - кол-во точек
@@ -289,17 +298,17 @@ void Snake::End() {
 						flag = false;
 					}
 				}
-				if (flag) ShowField(_setup.getField_color());
+				if (flag) ShowField(_setup.getFieldColor());
 			}
 			glPopMatrix();
 		}
 	}
 
 	//верхн€€ граница
-	for (int i = 0; i < width + 2; i++) {
+	for (int i = 0; i < 21 + 2; i++) {
 		glPushMatrix();
-		glTranslatef((float)i, (float)height + 1.0f, 0.0f);
-		ShowBorder(_setup.getBorder_color());
+		glTranslatef((float)i, (float)21.0 + 1.0f, 0.0f);
+		ShowBorder(_setup.getBorderColor());
 		glPopMatrix();
 	}
 
@@ -313,52 +322,40 @@ void Snake::SetInputDirection(sides direction)
 
 void Snake::GameBegin() {
 
-	GLFWwindow* window;
 
-	SetupSnake();
 	_setup.BeginMenu();
+	SetupSnake();
 
-	std::cout << _setup.getWindowSize().width << std::endl;
-	std::cout << _setup.getWindowSize().height << std::endl;
+
 	if (!_setup.getBeginGame()) {
 		return;
 	}
-
-	//window = glfwCreateWindow(_setup.getWindowSize().width, _setup.getWindowSize().height, "Snake", NULL, NULL);
-	window = glfwCreateWindow(600, 600, "Snake", NULL, NULL);
-	
-	std::cout << _setup.getWindowSize().width << std::endl;
-	std::cout << _setup.getWindowSize().height << std::endl;
-	/*
+	GLFWwindow* window;
+	window = glfwCreateWindow(_setup.getGameSize().width, _setup.getGameSize().height, "Snake", NULL, NULL);
 	glfwSetKeyCallback(window, key_callback);
-	
 	if (!window)
 	{
 		glfwTerminate();
 		return;
 	}
-	/*
 	glfwMakeContextCurrent(window);
 
+
 	while (!glfwWindowShouldClose(window)) {
-		/* Poll for and process events *//*
 		glfwPollEvents();
 
 		if (game) {
 			Draw();
 			Logic();
-			Sleep(200);
-
-			/* Swap front and back buffers *//*
+			Sleep(300);
 			glfwSwapBuffers(window);
-
 		}
 		else {
 			End();
 			Sleep(200);
 			glfwSwapBuffers(window);
 		}
-	}*/
+	}
 
 	return;
 }
