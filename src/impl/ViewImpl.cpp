@@ -8,6 +8,8 @@
 #include <cstring>
 #include <iomanip>
 #include <limits>
+#include <chrono>
+#include <thread>
 
 #include "impl/ViewImpl.h"
 
@@ -21,12 +23,13 @@ constexpr char QUIT = 'q';
 
 
 #include "Menu.h"
+
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif
 
-ViewImpl* ViewImpl::instance = nullptr;
+ViewImpl *ViewImpl::instance = nullptr;
 
 void ViewImpl::SetupMenu() {
 
@@ -78,14 +81,15 @@ int ViewImpl::BeginMenu() {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
 #else
     // GL 3.0 + GLSL 130
-    const char* glsl_version = "#version 130";
+    const char *glsl_version = "#version 130";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
 
-    GLFWwindow* window = glfwCreateWindow(_model->getMenuSize().width, _model->getMenuSize().height, "Snake", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(_model->getMenuSize().width, _model->getMenuSize().height, "Snake", nullptr,
+                                          nullptr);
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
@@ -93,7 +97,8 @@ int ViewImpl::BeginMenu() {
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO &io = ImGui::GetIO();
+    (void) io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
@@ -130,8 +135,7 @@ int ViewImpl::BeginMenu() {
             ImGui::End();
         }
 
-        if (_model->getSetup())
-        {
+        if (_model->getSetup()) {
             bool setup = _model->getSetup();
             int temp_width = _model->getGameSize().width;
             int temp_height = _model->getGameSize().height;
@@ -143,13 +147,13 @@ int ViewImpl::BeginMenu() {
             ImGui::SliderInt("height_game", &temp_height, 2, 21);
 
 
-            ImGui::ColorEdit3("Border color", (float*)&BorderColor);
-            ImGui::ColorEdit3("Field color", (float*)&FieldColor);
-            ImGui::ColorEdit3("Snake color", (float*)&SnakeColor);
-            ImGui::ColorEdit3("Fruit color", (float*)&FruitColor);
+            ImGui::ColorEdit3("Border color", (float *) &BorderColor);
+            ImGui::ColorEdit3("Field color", (float *) &FieldColor);
+            ImGui::ColorEdit3("Snake color", (float *) &SnakeColor);
+            ImGui::ColorEdit3("Fruit color", (float *) &FruitColor);
 
             if (ImGui::Button("Close"))
-                _model->setSetup( false );
+                _model->setSetup(false);
             ImGui::End();
 
             _model->setSetup(setup);
@@ -169,7 +173,8 @@ int ViewImpl::BeginMenu() {
 
         auto ClearColor = _model->getClearColor();
 
-        glClearColor(ClearColor.x * ClearColor.w, ClearColor.y * ClearColor.w, ClearColor.z * ClearColor.w, ClearColor.w);
+        glClearColor(ClearColor.x * ClearColor.w, ClearColor.y * ClearColor.w, ClearColor.z * ClearColor.w,
+                     ClearColor.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
@@ -189,15 +194,12 @@ int ViewImpl::BeginMenu() {
 }
 
 
-
 ViewImpl::ViewImpl(std::shared_ptr<IController> controller, std::shared_ptr<IModel> model)
-	: _controller(std::move(controller))
-	, _model(std::move(model))
-{
+        : _controller(std::move(controller)), _model(std::move(model)) {
     instance = this;
 }
 
-void ViewImpl::key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+void ViewImpl::key_callback(GLFWwindow *window, int key, int scancode, int action, int mode) {
     if (action == GLFW_PRESS) {
 
         switch (key) {
@@ -217,11 +219,9 @@ void ViewImpl::key_callback(GLFWwindow* window, int key, int scancode, int actio
     }
 }
 
-void ViewImpl::SetInputDirection(sides direction)
-{
+void ViewImpl::SetInputDirection(sides direction) {
     _model->setDir(direction);
 }
-
 
 
 void ViewImpl::draw() {
@@ -234,29 +234,57 @@ void ViewImpl::draw() {
     if (!_model->getBeginGame()) {
         return;
     }
-    GLFWwindow* window;
+    GLFWwindow *window;
     window = glfwCreateWindow(_model->getWindowSize().width, _model->getWindowSize().height, "Snake", NULL, NULL);
     glfwSetKeyCallback(window, key_callback);
-    if (!window)
-    {
+    if (!window) {
         glfwTerminate();
         return;
     }
     glfwMakeContextCurrent(window);
 
+    // Target update rate
+    const int targetUpdateDelay = 10.0;
+    const double targetUpdateTime = 1.0 / targetUpdateDelay;
+
+    
+// Target FPS and calculated frame time
+    const int targetFPS = 155;
+    const double targetFrameTime = 1.0 / targetFPS;
+
+// For timing the game loop
+    std::chrono::high_resolution_clock::time_point lastUpdateTime = std::chrono::high_resolution_clock::now();
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
+        // Calculate time since last frame
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        double deltaTime = std::chrono::duration<double>(currentTime - lastUpdateTime).count();
+
         if (_model->getGame()) {
             _controller->Draw();
-            _controller->Logic();
-            Sleep(300);
+
+            // Only update logic if enough time has passed
+            if (deltaTime >= targetUpdateTime) {
+                _controller->Logic();
+                lastUpdateTime = currentTime; // Reset timer
+            }
+
+            // Calculate sleep time to achieve target FPS
+            double frameTime = std::chrono::duration<double>(
+                    std::chrono::high_resolution_clock::now() - currentTime).count();
+            double sleepTime = targetFrameTime - frameTime;
+
+            // Sleep if there's time left in the frame
+            if (sleepTime > 0.0) {
+                std::this_thread::sleep_for(std::chrono::duration<double>(sleepTime));
+            }
+
             glfwSwapBuffers(window);
-        }
-        else {
+        } else {
             _controller->End();
-            Sleep(200);
+            // Consider adding a small delay here as well for smoother transitions
             glfwSwapBuffers(window);
         }
     }
