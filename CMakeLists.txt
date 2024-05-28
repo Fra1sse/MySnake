@@ -24,14 +24,14 @@ find_package(imgui CONFIG REQUIRED)
 # Добавьте источник в исполняемый файл этого проекта.
 add_executable (OpenGL)
 
-file(GLOB_RECURSE SOURCES "src/*.cpp" "src/main.cpp" "src/snake.cpp")
+file(GLOB_RECURSE SOURCES "src/*.cpp" "src/main.cpp")
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}/src
 )
 
-target_sources(${PROJECT_NAME} PRIVATE ${SOURCES} "include/snake.h" "src/snake.cpp" "src/main.cpp"  "src/menu.cpp" "include/menu.h")
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCES}  "src/main.cpp" )
 
 # this is heuristically generated, and may not be correct
 target_link_libraries(OpenGL PRIVATE OpenGL::GL)  
