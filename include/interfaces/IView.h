@@ -15,6 +15,9 @@ public:
 
     virtual void draw() = 0;
 
+    virtual void Draw() = 0;
+    virtual void End() = 0;
+
 	/*! \brief
 	 * Shows chip's settings (for now prints in console)
 	 */

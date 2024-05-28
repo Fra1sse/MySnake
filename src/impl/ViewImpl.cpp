@@ -22,7 +22,6 @@ constexpr char QUIT = 'q';
 */
 
 
-#include "Menu.h"
 
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -30,6 +29,208 @@ constexpr char QUIT = 'q';
 #endif
 
 ViewImpl *ViewImpl::instance = nullptr;
+
+
+
+namespace {
+
+
+    //координаты красных пикселей в слове END
+    Point end[34]{ {9,5}, {9,6}, {9,7}, {9,9}, {9,12}, {9,14}, {9,15}, {9,16},
+                   {13,5}, {13,6}, {13,7}, {13,9}, {13,12}, {13,14}, {13,15}, {13,16},
+                   {10, 5}, {10, 9}, {10, 12}, {10, 14}, {10, 17},
+                   {11, 5}, {11, 6}, {11, 9}, {11, 11}, {11, 12}, {11, 14}, {11, 17},
+                   {12, 5}, {12, 9}, {12, 10}, {12, 12}, {12, 14}, {12, 17} };
+}
+
+
+void ViewImpl::ShowFruit(ImVec4 Fruit_color) { //fruit
+    glBegin(GL_TRIANGLE_FAN);
+    glColor4f(Fruit_color.x * Fruit_color.w, Fruit_color.y * Fruit_color.w, Fruit_color.z * Fruit_color.w, Fruit_color.w);
+    glColor3f(1,0,0);
+    glVertex2f(0.3f, 0.3f);
+    glVertex2f(0.3f, 0.7f);
+    glVertex2f(0.7f, 0.7f);
+    glVertex2f(0.7f, 0.3f);
+    glEnd();
+}
+
+void ViewImpl::ShowSnake_0(ImVec4 Snake_color) { //snake 0
+
+    glBegin(GL_TRIANGLE_FAN);
+    glColor4f(Snake_color.x * Snake_color.w, Snake_color.y * Snake_color.w, Snake_color.z * Snake_color.w, Snake_color.w);
+    glVertex2f(0.1f, 0.1f);
+    glVertex2f(0.1f, 0.9f);
+    glVertex2f(0.9f, 0.9f);
+    glVertex2f(0.9f, 0.1f);
+    glEnd();
+
+}
+
+void ViewImpl::ShowSnake_o(ImVec4 Snake_color) { //snake o
+    glBegin(GL_TRIANGLE_FAN);
+    glColor4f(Snake_color.x * Snake_color.w, Snake_color.y * Snake_color.w, Snake_color.z * Snake_color.w, Snake_color.w);
+    glVertex2f(0.2f, 0.2f);
+    glVertex2f(0.2f, 0.8f);
+    glVertex2f(0.8f, 0.8f);
+    glVertex2f(0.8f, 0.2f);
+    glEnd();
+
+}
+
+void ViewImpl::ShowField(ImVec4 Field_color) { //фон
+    glBegin(GL_TRIANGLE_STRIP);
+    glColor4f((Field_color.x * Field_color.w), (Field_color.y * Field_color.w), (Field_color.z * Field_color.w), Field_color.w);
+    glVertex2f(0, 1);
+    glColor4f((Field_color.x * Field_color.w) - 0.1f, (Field_color.y * Field_color.w) - 0.1f, (Field_color.z * Field_color.w) - 0.1f, Field_color.w);
+    glVertex2f(1, 1); glVertex2f(0, 0);
+    glColor4f((Field_color.x * Field_color.w) - 0.2f, (Field_color.y * Field_color.w) - 0.2f, (Field_color.z * Field_color.w) - 0.2f, Field_color.w);
+    glVertex2f(1, 0);
+    glEnd();
+}
+
+
+
+void ViewImpl::ShowBorder(ImVec4 Border_color) { //граница
+    glBegin(GL_TRIANGLE_STRIP);
+    glColor4f((Border_color.x * Border_color.w), (Border_color.y * Border_color.w), (Border_color.z * Border_color.w), Border_color.w);
+    glVertex2f(0, 1);
+    glColor4f((Border_color.x * Border_color.w) + 0.1f, (Border_color.y * Border_color.w) + 0.1f, (Border_color.z * Border_color.w) + 0.1f, Border_color.w);
+    glVertex2f(1, 1); glVertex2f(0, 0);
+    glColor4f((Border_color.x * Border_color.w) + 0.2f, (Border_color.y * Border_color.w) + 0.2f, (Border_color.z * Border_color.w) + 0.2f, Border_color.w);
+    glVertex2f(1, 0);
+    glEnd();
+}
+
+void ViewImpl::ShowEnd() {
+    glBegin(GL_TRIANGLE_STRIP);
+    glColor3f(1.0f, 0.0f, 0.0f); glVertex2f(0, 1);
+    glColor3f(0.9f, 0.0f, 0.0f); glVertex2f(1, 1); glVertex2f(0, 0);
+    glColor3f(0.8f, 0.0f, 0.0f); glVertex2f(1, 0);
+    glEnd();
+}
+
+
+void ViewImpl::Draw() {
+
+
+
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    //рисовка происходит снизу вверх
+
+    glLoadIdentity();
+    glScaled(2.0 / (_model->getGameSize().width + 2), 2.0 / (_model->getGameSize().height + 2), 1);
+    glTranslatef(-((float)_model->getGameSize().width + 2.0f) * 0.5f, -((float)_model->getGameSize().height + 2.0f) * 0.5f, 0.0f);
+
+    //нижняя граница
+    for (int i = 0; i < _model->getGameSize().width + 2; i++) {
+        glPushMatrix();
+        glTranslatef((float)i, 0.0f, 0.0f);
+        ShowBorder(_model->getBorderColor());
+        glPopMatrix();
+    }
+
+    //поле
+    for (int j = 0; j < _model->getGameSize().height; j++) {
+        for (int i = 0; i < _model->getGameSize().width + 2; i++) {
+            glPushMatrix();
+            glTranslatef((float)i, (float)j + 1, 0.0f);
+
+
+            if (i == 0 || i == _model->getGameSize().width + 1)
+                ShowBorder(_model->getBorderColor());
+            else if (j == _model->getY() && i == _model->getX()) {
+                ShowField(_model->getFieldColor());
+                ShowSnake_0(_model->getSnakeColor());
+            }
+            else if (j == _model->getFruitY() && i == _model->getFruitX()) {
+                ShowField(_model->getFieldColor());
+                ShowFruit(_model->getFruitColor());
+            }
+            else {
+                bool print = false;
+                for (int k = 0; k < _model->getNTail(); k++) {
+                    if (_model->getTailY()[k] == j && _model->getTailX()[k] == i) {
+                        ShowField(_model->getFieldColor());
+                        ShowSnake_o(_model->getSnakeColor());
+                        print = true;
+                    }
+                }
+                if (!print)
+                    ShowField(_model->getFieldColor());
+            }
+            glPopMatrix();
+        }
+    }
+
+    //верхняя граница
+    for (int i = 0; i < _model->getGameSize().width + 2; i++) {
+        glPushMatrix();
+        glTranslatef((float)i, (float)_model->getGameSize().height + 1, 0.0f);
+        ShowBorder(_model->getBorderColor());
+        glPopMatrix();
+    }
+
+}
+
+void ViewImpl::End() {
+
+
+
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glLoadIdentity();
+    glScaled(2.0 / (21.0 + 2.0), 2.0 / (21. + 2.0), 1.0);
+    glTranslatef(-((float)21.0 + 2.0f) * 0.5f, -((float)21.0 + 2.0f) * 0.5f, 0.0f);
+
+    //нижняя граница
+    for (int i = 0; i < 21 + 2; i++) {
+        glPushMatrix();
+        glTranslatef((float)i, 0.0f, 0.0f);
+        ShowBorder(_model->getBorderColor());
+        glPopMatrix();
+    }
+
+    //поле
+    for (int j = 0; j < 21; j++) {
+        for (int i = 0; i < 21 + 2; i++) {
+            glPushMatrix();
+            glTranslatef((float)i, (float)j + 1.0f, 0.0f);
+
+
+            if (i == 0 || i == 21 + 1)
+                ShowBorder(_model->getBorderColor());
+            else {
+                bool flag = true;
+                for (int k = 0; k < 34; k++) { // 34 - кол-во точек
+                    if (end[k].x == i && end[k].y == j + 1) {
+                        ShowEnd();
+                        flag = false;
+                    }
+                }
+                if (flag) ShowField(_model->getFieldColor());
+            }
+            glPopMatrix();
+        }
+    }
+
+    //верхняя граница
+    for (int i = 0; i < 21 + 2; i++) {
+        glPushMatrix();
+        glTranslatef((float)i, (float)21.0 + 1.0f, 0.0f);
+        ShowBorder(_model->getBorderColor());
+        glPopMatrix();
+    }
+
+}
+
+
+
 
 void ViewImpl::SetupMenu() {
 
@@ -142,6 +343,12 @@ int ViewImpl::BeginMenu() {
 
             ImVec4 BorderColor, FieldColor, SnakeColor, FruitColor;
 
+            BorderColor = _model->getBorderColor();
+            FieldColor = _model->getFieldColor();
+            SnakeColor = _model->getSnakeColor();
+            FruitColor = _model->getFruitColor();
+
+
             ImGui::Begin("Setup Game", &setup);
             ImGui::SliderInt("width_game", &temp_width, 2, 21);
             ImGui::SliderInt("height_game", &temp_height, 2, 21);
@@ -247,7 +454,7 @@ void ViewImpl::draw() {
     const int targetUpdateDelay = 10.0;
     const double targetUpdateTime = 1.0 / targetUpdateDelay;
 
-    
+
 // Target FPS and calculated frame time
     const int targetFPS = 155;
     const double targetFrameTime = 1.0 / targetFPS;
@@ -263,7 +470,7 @@ void ViewImpl::draw() {
         double deltaTime = std::chrono::duration<double>(currentTime - lastUpdateTime).count();
 
         if (_model->getGame()) {
-            _controller->Draw();
+            Draw();
 
             // Only update logic if enough time has passed
             if (deltaTime >= targetUpdateTime) {
@@ -283,7 +490,7 @@ void ViewImpl::draw() {
 
             glfwSwapBuffers(window);
         } else {
-            _controller->End();
+            End();
             // Consider adding a small delay here as well for smoother transitions
             glfwSwapBuffers(window);
         }

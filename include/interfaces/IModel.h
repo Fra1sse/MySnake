@@ -18,6 +18,10 @@ struct Size8 {
     std::uint8_t height;
 };
 
+struct Point {
+    int y, x;
+};
+
 class IModel
 {
 public:
