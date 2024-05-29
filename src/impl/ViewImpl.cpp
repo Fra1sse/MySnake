@@ -1,6 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
@@ -13,16 +10,6 @@
 
 #include "impl/ViewImpl.h"
 
-/*
-namespace
-{
-constexpr char CHANGE_BRIGHTNESS = 'b';
-constexpr char QUIT = 'q';
-}
-*/
-
-
-
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
@@ -30,11 +17,7 @@ constexpr char QUIT = 'q';
 
 ViewImpl *ViewImpl::instance = nullptr;
 
-
-
 namespace {
-
-
     //координаты красных пикселей в слове END
     Point end[34]{ {9,5}, {9,6}, {9,7}, {9,9}, {9,12}, {9,14}, {9,15}, {9,16},
                    {13,5}, {13,6}, {13,7}, {13,9}, {13,12}, {13,14}, {13,15}, {13,16},
@@ -43,8 +26,8 @@ namespace {
                    {12, 5}, {12, 9}, {12, 10}, {12, 12}, {12, 14}, {12, 17} };
 }
 
-
-void ViewImpl::ShowFruit(ImVec4 Fruit_color) { //fruit
+void ViewImpl::ShowFruit(ImVec4 Fruit_color) //fruit
+{
     glBegin(GL_TRIANGLE_FAN);
     glColor4f(Fruit_color.x * Fruit_color.w, Fruit_color.y * Fruit_color.w, Fruit_color.z * Fruit_color.w, Fruit_color.w);
     glColor3f(1,0,0);
@@ -55,8 +38,8 @@ void ViewImpl::ShowFruit(ImVec4 Fruit_color) { //fruit
     glEnd();
 }
 
-void ViewImpl::ShowSnake_0(ImVec4 Snake_color) { //snake 0
-
+void ViewImpl::ShowSnake_0(ImVec4 Snake_color) //snake 0
+{
     glBegin(GL_TRIANGLE_FAN);
     glColor4f(Snake_color.x * Snake_color.w, Snake_color.y * Snake_color.w, Snake_color.z * Snake_color.w, Snake_color.w);
     glVertex2f(0.1f, 0.1f);
@@ -64,10 +47,10 @@ void ViewImpl::ShowSnake_0(ImVec4 Snake_color) { //snake 0
     glVertex2f(0.9f, 0.9f);
     glVertex2f(0.9f, 0.1f);
     glEnd();
-
 }
 
-void ViewImpl::ShowSnake_o(ImVec4 Snake_color) { //snake o
+void ViewImpl::ShowSnake_o(ImVec4 Snake_color) //snake o
+{
     glBegin(GL_TRIANGLE_FAN);
     glColor4f(Snake_color.x * Snake_color.w, Snake_color.y * Snake_color.w, Snake_color.z * Snake_color.w, Snake_color.w);
     glVertex2f(0.2f, 0.2f);
@@ -75,10 +58,10 @@ void ViewImpl::ShowSnake_o(ImVec4 Snake_color) { //snake o
     glVertex2f(0.8f, 0.8f);
     glVertex2f(0.8f, 0.2f);
     glEnd();
-
 }
 
-void ViewImpl::ShowField(ImVec4 Field_color) { //фон
+void ViewImpl::ShowField(ImVec4 Field_color) //фон
+{
     glBegin(GL_TRIANGLE_STRIP);
     glColor4f((Field_color.x * Field_color.w), (Field_color.y * Field_color.w), (Field_color.z * Field_color.w), Field_color.w);
     glVertex2f(0, 1);
@@ -89,9 +72,8 @@ void ViewImpl::ShowField(ImVec4 Field_color) { //фон
     glEnd();
 }
 
-
-
-void ViewImpl::ShowBorder(ImVec4 Border_color) { //граница
+void ViewImpl::ShowBorder(ImVec4 Border_color) //граница
+{
     glBegin(GL_TRIANGLE_STRIP);
     glColor4f((Border_color.x * Border_color.w), (Border_color.y * Border_color.w), (Border_color.z * Border_color.w), Border_color.w);
     glVertex2f(0, 1);
@@ -102,7 +84,8 @@ void ViewImpl::ShowBorder(ImVec4 Border_color) { //граница
     glEnd();
 }
 
-void ViewImpl::ShowEnd() {
+void ViewImpl::ShowEnd() 
+{
     glBegin(GL_TRIANGLE_STRIP);
     glColor3f(1.0f, 0.0f, 0.0f); glVertex2f(0, 1);
     glColor3f(0.9f, 0.0f, 0.0f); glVertex2f(1, 1); glVertex2f(0, 0);
@@ -110,17 +93,13 @@ void ViewImpl::ShowEnd() {
     glEnd();
 }
 
-
-void ViewImpl::Draw() {
-
-
-
+void ViewImpl::Draw() 
+{
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     glClear(GL_COLOR_BUFFER_BIT);
 
     //рисовка происходит снизу вверх
-
     glLoadIdentity();
     glScaled(2.0 / (_model->getGameSize().width + 2), 2.0 / (_model->getGameSize().height + 2), 1);
     glTranslatef(-((float)_model->getGameSize().width + 2.0f) * 0.5f, -((float)_model->getGameSize().height + 2.0f) * 0.5f, 0.0f);
@@ -138,7 +117,6 @@ void ViewImpl::Draw() {
         for (int i = 0; i < _model->getGameSize().width + 2; i++) {
             glPushMatrix();
             glTranslatef((float)i, (float)j + 1, 0.0f);
-
 
             if (i == 0 || i == _model->getGameSize().width + 1)
                 ShowBorder(_model->getBorderColor());
@@ -173,13 +151,10 @@ void ViewImpl::Draw() {
         ShowBorder(_model->getBorderColor());
         glPopMatrix();
     }
-
 }
 
-void ViewImpl::End() {
-
-
-
+void ViewImpl::End() 
+{
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
     glClear(GL_COLOR_BUFFER_BIT);
@@ -201,7 +176,6 @@ void ViewImpl::End() {
         for (int i = 0; i < 21 + 2; i++) {
             glPushMatrix();
             glTranslatef((float)i, (float)j + 1.0f, 0.0f);
-
 
             if (i == 0 || i == 21 + 1)
                 ShowBorder(_model->getBorderColor());
@@ -226,14 +200,10 @@ void ViewImpl::End() {
         ShowBorder(_model->getBorderColor());
         glPopMatrix();
     }
-
 }
 
-
-
-
-void ViewImpl::SetupMenu() {
-
+void ViewImpl::SetupMenu() 
+{
     _model->setMenuSize({1200, 600});
 
     _model->setClearColor(ImVec4(0.45f, 0.55f, 0.60f, 1.00f));
@@ -243,23 +213,20 @@ void ViewImpl::SetupMenu() {
     _model->setBeginGame(false);
 }
 
-void ViewImpl::SetupGame() {
-
-
+void ViewImpl::SetupGame() 
+{
     _model->setWindowSize({600, 600});
 
-    _model->setGameSize({20, 20});
+    _model->setGameSize({11, 11});
 
     _model->setBorderColor(ImVec4(0.0f, 0.0f, 0.0f, 1.00f));
     _model->setFieldColor(ImVec4(0.8f, 0.8f, 0.8f, 1.00f));
     _model->setFruitColor(ImVec4(1.0f, 0.0f, 0.0f, 1.00f));
     _model->setSnakeColor(ImVec4(0.0f, 1.0f, 0.0f, 1.00f));
-
 }
 
-
-int ViewImpl::BeginMenu() {
-
+int ViewImpl::BeginMenu() 
+{
     SetupMenu();
     SetupGame();
 
@@ -300,8 +267,8 @@ int ViewImpl::BeginMenu() {
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     (void) io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsLight();
@@ -322,7 +289,6 @@ int ViewImpl::BeginMenu() {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
         {
             ImGui::Begin("Menu");
             ImGui::Text("Snake");
@@ -348,11 +314,9 @@ int ViewImpl::BeginMenu() {
             SnakeColor = _model->getSnakeColor();
             FruitColor = _model->getFruitColor();
 
-
             ImGui::Begin("Setup Game", &setup);
             ImGui::SliderInt("width_game", &temp_width, 2, 21);
             ImGui::SliderInt("height_game", &temp_height, 2, 21);
-
 
             ImGui::ColorEdit3("Border color", (float *) &BorderColor);
             ImGui::ColorEdit3("Field color", (float *) &FieldColor);
@@ -361,17 +325,17 @@ int ViewImpl::BeginMenu() {
 
             if (ImGui::Button("Close"))
                 _model->setSetup(false);
+            else 
+                _model->setSetup(setup);
+
             ImGui::End();
 
-            _model->setSetup(setup);
             _model->setGameSize({static_cast<std::uint8_t>(temp_width), static_cast<std::uint8_t>(temp_height)});
             _model->setBorderColor(BorderColor);
             _model->setFieldColor(FieldColor);
             _model->setSnakeColor(SnakeColor);
             _model->setFruitColor(FruitColor);
-
         }
-
 
         ImGui::Render();
         int display_w, display_h;
@@ -396,10 +360,8 @@ int ViewImpl::BeginMenu() {
     glfwDestroyWindow(window);
     glfwTerminate();
 
-
     return 0;
 }
-
 
 ViewImpl::ViewImpl(std::shared_ptr<IController> controller, std::shared_ptr<IModel> model)
         : _controller(std::move(controller)), _model(std::move(model)) {
@@ -408,7 +370,6 @@ ViewImpl::ViewImpl(std::shared_ptr<IController> controller, std::shared_ptr<IMod
 
 void ViewImpl::key_callback(GLFWwindow *window, int key, int scancode, int action, int mode) {
     if (action == GLFW_PRESS) {
-
         switch (key) {
             case GLFW_KEY_A:
                 ViewImpl::instance->SetInputDirection(left);
@@ -426,17 +387,16 @@ void ViewImpl::key_callback(GLFWwindow *window, int key, int scancode, int actio
     }
 }
 
-void ViewImpl::SetInputDirection(sides direction) {
+void ViewImpl::SetInputDirection(sides direction) 
+{
     _model->setDir(direction);
 }
 
-
-void ViewImpl::draw() {
+void ViewImpl::draw() 
+{
     BeginMenu();
 
-
     _controller->SetupSnake();
-
 
     if (!_model->getBeginGame()) {
         return;
@@ -451,21 +411,18 @@ void ViewImpl::draw() {
     glfwMakeContextCurrent(window);
 
     // Target update rate
-    const int targetUpdateDelay = 10.0;
+    const int targetUpdateDelay = 5.0;
     const double targetUpdateTime = 1.0 / targetUpdateDelay;
 
-
-// Target FPS and calculated frame time
+    // Target FPS and calculated frame time
     const int targetFPS = 155;
     const double targetFrameTime = 1.0 / targetFPS;
 
-// For timing the game loop
     std::chrono::high_resolution_clock::time_point lastUpdateTime = std::chrono::high_resolution_clock::now();
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
-
-        // Calculate time since last frame
+        
         auto currentTime = std::chrono::high_resolution_clock::now();
         double deltaTime = std::chrono::duration<double>(currentTime - lastUpdateTime).count();
 
@@ -483,19 +440,15 @@ void ViewImpl::draw() {
                     std::chrono::high_resolution_clock::now() - currentTime).count();
             double sleepTime = targetFrameTime - frameTime;
 
-            // Sleep if there's time left in the frame
             if (sleepTime > 0.0) {
                 std::this_thread::sleep_for(std::chrono::duration<double>(sleepTime));
             }
-
             glfwSwapBuffers(window);
-        } else {
+        } 
+        else {
             End();
-            // Consider adding a small delay here as well for smoother transitions
+            
             glfwSwapBuffers(window);
         }
     }
-
-
 }
-

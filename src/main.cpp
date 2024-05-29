@@ -25,9 +25,6 @@ int main() {
     return 0;
 
 
-    /*Snake game;
-    game.GameBegin();*/
-    
     
     return 0;
 }

@@ -1,32 +1,13 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
 #include "impl/ControllerImpl.h"
 
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
-/*
-namespace
-{
-constexpr unsigned char BRIGHTNESS_BYTE = static_cast<unsigned char>(0x09);
-constexpr unsigned char ACTION_BYTE = static_cast<unsigned char>(0x02);
 
-constexpr unsigned REPORT_LENGTH = 9;
-}
-
-namespace ErrorMsg
-{
-constexpr const char* ChipError = "ErrorMsg: something is wrong with the chip";
-}
-*/
 ControllerImpl::ControllerImpl(std::shared_ptr<IModel> model)
 	: _model(std::move(model))
 {
-
 }
-
-
 
 void ControllerImpl::SetupSnake()
 {
@@ -57,9 +38,8 @@ void ControllerImpl::Fruit()
         }
 }
 
-
-
-void ControllerImpl::Logic() {
+void ControllerImpl::Logic() 
+{
     int prevX = _model->getTailX()[0];
     int prevY = _model->getTailY()[0];
     int prev2X, prev2Y;
@@ -99,7 +79,6 @@ void ControllerImpl::Logic() {
     for (int i = 0; i < _model->getNTail(); i++) {
         if (_model->getTailX()[i] == _model->getX() && _model->getTailY()[i] == _model->getY())
             _model->setGame(false);
-
     }
 
     //если попал в фрукт
@@ -107,7 +86,5 @@ void ControllerImpl::Logic() {
         _model->setPoints(_model->getPoints() + 10);
         _model->setNTail(_model->getNTail()+ 1);
         Fruit();
-
     }
 }
-

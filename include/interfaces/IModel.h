@@ -3,7 +3,6 @@
 #include <memory>
 #include <string_view>
 
-
 #include "imgui.h"
 
 enum sides { stop = 0, left, right, up, down };
@@ -26,11 +25,7 @@ class IModel
 {
 public:
 
-
     virtual ~IModel() = default;
-
-    //virtual hid_device* getChipHandler() = 0;
-    //virtual int getBrightness() = 0;
 
     virtual bool getGame() const = 0;
     virtual void setGame(bool g) = 0;

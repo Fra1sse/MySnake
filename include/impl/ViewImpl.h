@@ -35,10 +35,6 @@ public:
     void Draw() override;
     void End() override;
 
-    /*void showCurrentSettings() override;
-    void runMenu() override;*/
-//	void changeBrightness(int lvl) override;
-
 private:
 	std::shared_ptr<IController> _controller;
 	std::shared_ptr<IModel> _model;

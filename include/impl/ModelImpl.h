@@ -14,11 +14,14 @@
 #include <math.h>
 
 
+
 class ModelImpl : public IModel {
 public:
 
-
-    /*! \brief
+    /*! \brief short desc
+    * 
+    * long desc
+    * \param nnn desc
      * throws std::runtime_error()
      */
     ModelImpl();
@@ -29,12 +32,9 @@ public:
 
     ModelImpl &operator=(const ModelImpl &) = delete;
 
-    /*hid_device* getChipHandler() override;
-    int getBrightness() override;*/
+    bool getGame() const override { return _game; }
 
-    bool getGame() const override { return game; }
-
-    void setGame(bool g) override { game = g; }
+    void setGame(bool g) override { _game = g; }
 
     sides getDir() const override { return dir; }
 
@@ -62,9 +62,7 @@ public:
 
     int *getTailX() const override { return tailX; }
 
-
     int *getTailY() const override { return tailY; }
-
 
     int getNTail() const override { return ntail; }
 
@@ -114,16 +112,11 @@ public:
 
     void setEndMenu(bool value) override { EndMenu = value; }
 
-
-
-
-
 private:
-
 
     void SetInputDirection(sides direction);
 
-    bool game;
+    bool _game; //!< comment
     sides dir;
     int x, y;
     int fruitX, fruitY;
@@ -140,14 +133,10 @@ private:
     bool Setup;
     bool EndMenu;
 
-
     ImVec4 ClearColor;
     ImVec4 BorderColor;
     ImVec4 FieldColor;
     ImVec4 FruitColor;
     ImVec4 SnakeColor;
 
-
-    /*hid_device* _dev; // todo: change to ref?
-    int _brightness;*/
 };

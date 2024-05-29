@@ -18,11 +18,8 @@
 
 class ControllerImpl : public IController
 {
-
 public:
 	explicit ControllerImpl(std::shared_ptr<IModel>);
-
-    //void GameBegin();
 
     void SetupSnake() override;
 
@@ -30,15 +27,7 @@ public:
 
     void Logic() override;
 
-
-
-	/*void setBrightness(int lvl) override;*/
 private:
 	std::shared_ptr<IModel> _model;
-
-
-
-
-
 
 };
