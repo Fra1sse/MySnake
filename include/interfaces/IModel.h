@@ -7,17 +7,20 @@
 
 enum sides { stop = 0, left, right, up, down };
 
-struct Size16 {
+struct Size16 
+{
     std::uint16_t width;
     std::uint16_t height;
 };
 
-struct Size8 {
+struct Size8 
+{
     std::uint8_t width;
     std::uint8_t height;
 };
 
-struct Point {
+struct Point 
+{
     int y, x;
 };
 
